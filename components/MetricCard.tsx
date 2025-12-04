@@ -106,9 +106,9 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
       )}
 
       {/* Chart - Only render if we have numeric data suitable for a bar chart */}
-      <div className="h-32 mt-auto w-full">
+      <div className="h-32 mt-auto w-full" style={{ minHeight: '128px' }}>
         {canShowChart ? (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <BarChart data={chartData}>
                 <XAxis 
                     dataKey="name" 
