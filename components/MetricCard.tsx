@@ -95,15 +95,13 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
 
       {data.id === 'cpk' && (
         <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-md animate-pulse">
-            <div className="flex items-start gap-3">
-                <AlertTriangle className="w-6 h-6 text-red-600 shrink-0" />
-                <div>
-                    <h4 className="font-bold text-red-800 text-sm">Atenção Médica Necessária</h4>
-                    <p className="text-xs text-red-700 mt-1 leading-relaxed">
-                        Aumento drástico de 42 para 1219 U/L. Este nível sugere possível lesão muscular e requer avaliação médica imediata.
-                    </p>
-                </div>
-            </div>
+            <h4 className="font-bold text-red-800 text-sm flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+                Atenção Médica Necessária
+            </h4>
+            <p className="text-xs text-red-700 leading-relaxed ml-7">
+                Aumento drástico de 42 para 1219 U/L. Este nível sugere possível lesão muscular e requer avaliação médica imediata.
+            </p>
         </div>
       )}
 
