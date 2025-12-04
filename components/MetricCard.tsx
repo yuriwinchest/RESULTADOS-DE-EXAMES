@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { ExamDataPoint, Trend } from '../types';
@@ -108,7 +107,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
       {/* Chart - Only render if we have numeric data suitable for a bar chart */}
       <div className="h-32 mt-auto w-full" style={{ minHeight: '128px' }}>
         {canShowChart ? (
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={100}>
             <BarChart data={chartData}>
                 <XAxis 
                     dataKey="name" 
