@@ -6,7 +6,14 @@ let chatSession: Chat | null = null;
 const API_KEY = process.env.API_KEY;
 
 // Initialize Gemini
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+let ai: GoogleGenAI | null = null;
+if (API_KEY) {
+  try {
+    ai = new GoogleGenAI({ apiKey: API_KEY });
+  } catch (e) {
+    console.error("Error initializing GoogleGenAI", e);
+  }
+}
 
 const getSystemInstruction = (): string => {
   const dataContext = JSON.stringify(EXAM_DATA);
@@ -29,8 +36,8 @@ const getSystemInstruction = (): string => {
 };
 
 export const initializeChat = (): void => {
-  if (!API_KEY) {
-    console.error("API Key not found in environment variables");
+  if (!API_KEY || !ai) {
+    console.error("API Key not found or Gemini not initialized");
     return;
   }
 
@@ -50,6 +57,7 @@ export const initializeChat = (): void => {
 export const sendMessageToGemini = async (message: string): Promise<string> => {
   if (!chatSession) {
     initializeChat();
+    // Re-check after attempt
     if (!chatSession) return "Erro: Serviço de IA não disponível (Verifique API Key).";
   }
 
@@ -63,8 +71,8 @@ export const sendMessageToGemini = async (message: string): Promise<string> => {
 };
 
 export const analyzePdf = async (base64Data: string): Promise<AnalysisResult | null> => {
-  if (!API_KEY) {
-    console.error("API Key not found");
+  if (!API_KEY || !ai) {
+    console.error("API Key not found or Gemini not initialized");
     return null;
   }
 
