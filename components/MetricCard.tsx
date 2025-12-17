@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { ExamDataPoint, Trend } from '../types';
 import { TrendingDown, TrendingUp, Minus, AlertTriangle } from 'lucide-react';
@@ -8,6 +8,12 @@ interface MetricCardProps {
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Check if values are numbers for charting. Strings (like "Positivo") should not be charted.
   const isNumeric1 = typeof data.value1 === 'number';
   const isNumeric2 = typeof data.value2 === 'number';
@@ -107,25 +113,29 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
       {/* Chart - Only render if we have numeric data suitable for a bar chart */}
       <div className="h-32 mt-auto w-full" style={{ minHeight: '128px' }}>
         {canShowChart ? (
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={100}>
-            <BarChart data={chartData}>
-                <XAxis 
-                    dataKey="name" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{fontSize: 12, fill: '#94a3b8'}}
-                />
-                <Tooltip 
-                    cursor={{fill: '#f1f5f9'}}
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={40}>
-                    {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 1 ? '#3b82f6' : '#cbd5e1'} />
-                    ))}
-                </Bar>
-            </BarChart>
-            </ResponsiveContainer>
+            isMounted ? (
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={100}>
+                <BarChart data={chartData}>
+                    <XAxis 
+                        dataKey="name" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{fontSize: 12, fill: '#94a3b8'}}
+                    />
+                    <Tooltip 
+                        cursor={{fill: '#f1f5f9'}}
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    />
+                    <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={40}>
+                        {chartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={index === 1 ? '#3b82f6' : '#cbd5e1'} />
+                        ))}
+                    </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full bg-slate-50 rounded animate-pulse" />
+            )
         ) : (
             <div className="h-full flex items-center justify-center bg-slate-50 rounded-lg border border-dashed border-slate-200">
                 <p className="text-xs text-slate-400">
