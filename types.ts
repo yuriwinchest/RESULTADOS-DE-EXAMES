@@ -23,10 +23,10 @@ export interface ExamDataPoint {
   name: string;
   unit: string;
   reference: string;
-  date1: string; // 17/09/2025
+  date1: string | null; // Changed to allow null
   value1: number | string | null;
   status1: string;
-  date2: string; // 02/12/2025
+  date2: string | null; // Changed to allow null
   value2: number | string | null;
   status2: string;
   observation: string;
