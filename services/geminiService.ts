@@ -1,14 +1,16 @@
-import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
+import { GoogleGenAI, Chat, GenerateContentResponse, Part } from "@google/genai";
 import { EXAM_DATA } from "../constants";
+import { AnalysisResult, Category, Trend } from "../types";
 
 let chatSession: Chat | null = null;
+const API_KEY = process.env.API_KEY;
 
 // Initialize Gemini
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 const getSystemInstruction = (): string => {
   const dataContext = JSON.stringify(EXAM_DATA);
-  
+
   return `
     Você é um assistente médico virtual útil, especializado em análise de exames laboratoriais.
     
@@ -27,7 +29,7 @@ const getSystemInstruction = (): string => {
 };
 
 export const initializeChat = (): void => {
-  if (!process.env.API_KEY) {
+  if (!API_KEY) {
     console.error("API Key not found in environment variables");
     return;
   }
@@ -57,5 +59,83 @@ export const sendMessageToGemini = async (message: string): Promise<string> => {
   } catch (error) {
     console.error("Gemini API Error:", error);
     return "Desculpe, ocorreu um erro ao processar sua pergunta. Tente novamente.";
+  }
+};
+
+export const analyzePdf = async (base64Data: string): Promise<AnalysisResult | null> => {
+  if (!API_KEY) {
+    console.error("API Key not found");
+    return null;
+  }
+
+  try {
+    // const model = ai.models.getVertexModel('gemini-2.0-flash-exp'); // Removed invalid/unused call
+
+    // Using generic generation for PDF analysis with schema enforcement via prompt
+    // Note: Using a standard model initialization here as the 'chats' abstraction 
+    // might be stateful/conversational, and we want a one-off analysis.
+
+    // Since the provided SDK wrapper syntax in the file seems slightly custom or specific version 
+    // (importing from @google/genai which is the new SDK), let's stick to the pattern but use a fresh generate call.
+
+    const prompt = `
+          Analise este PDF de exame de sangue. Extraia os dados e gere um resumo.
+          Retorne APENAS um JSON válido (sem markdown code blocks) com a seguinte estrutura:
+          {
+              "goodNews": ["string", "string"], // Pontos positivos/melhorias
+              "attentionPoints": ["string", "string"], // Pontos de atenção/piora/fora do normal
+              "examData": [
+                  {
+                      "id": "string (unique)",
+                      "name": "Nome do Exame",
+                      "unit": "unidade",
+                      "reference": "valor de referência",
+                      "date1": "Data anterior (se houver, formato DD/MM/AAAA)",
+                      "value1": number | string | null,
+                      "status1": "Normal" | "Alto" | "Baixo",
+                      "date2": "Data atual do exame (formato DD/MM/AAAA)",
+                      "value2": number | string | null,
+                      "status2": "Normal" | "Alto" | "Baixo",
+                      "observation": "Breve observação sobre a mudança ou estado",
+                      "category": "${Object.values(Category).join('" | "')}", 
+                      "trend": "${Object.values(Trend).join('" | "')}"
+                  }
+              ]
+          }
+          
+          Regras para Categorias (tente encaixar nestas):
+          Lipídios, Fígado, Metabolismo, Músculos, Inflamação, Rins, Eletrólitos, Sangue/Ferro, Urina.
+      `;
+
+    // The SDK used seems to be the Google GenAI SDK (Node/Web). 
+    // Let's assume ai.models.generateContent is the way or similar.
+    // Re-using the 'ai' instance strategy if possible, but 'ai' is a client.
+
+    // Correct usage for @google/genai (approximate based on file content):
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash-exp',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: prompt },
+            { inlineData: { mimeType: 'application/pdf', data: base64Data } }
+          ]
+        }
+      ]
+    });
+
+    const text = response.text; // TypeScript indicates this is not a function, so treat as property
+
+    // Clean up markdown code blocks if present
+    const cleanJson = text?.replace(/```json/g, '').replace(/```/g, '').trim();
+
+    if (!cleanJson) return null;
+
+    return JSON.parse(cleanJson) as AnalysisResult;
+
+  } catch (error) {
+    console.error("Error analyzing PDF:", error);
+    return null;
   }
 };

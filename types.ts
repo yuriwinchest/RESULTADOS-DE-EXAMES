@@ -23,15 +23,21 @@ export interface ExamDataPoint {
   name: string;
   unit: string;
   reference: string;
-  date1: string | null; // Changed to allow null
+  date1: string | null; // 17/09/2025
   value1: number | string | null;
   status1: string;
-  date2: string | null; // Changed to allow null
+  date2: string | null; // 02/12/2025
   value2: number | string | null;
   status2: string;
   observation: string;
   category: Category;
   trend: Trend;
+}
+
+export interface AnalysisResult {
+  goodNews: string[];
+  attentionPoints: string[];
+  examData: ExamDataPoint[];
 }
 
 export interface ChatMessage {
