@@ -122,7 +122,7 @@ export const analyzePdf = async (base64Data: string): Promise<AnalysisResult | n
     console.log("Iniciando análise de PDF com modelo: gemini-1.5-flash");
 
     const response = await (ai as any).models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-1.5-flash-latest',
       contents: [
         {
           role: 'user',
