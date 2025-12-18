@@ -10,8 +10,14 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // Map the user's 'exame_key' from Vercel/env to process.env.exame_key
-      'process.env.exame_key': JSON.stringify(env.exame_key),
+      // Prioritize VITE_EXAME_KEY then exame_key from any source (env files or system env)
+      'process.env.exame_key': JSON.stringify(
+        env.VITE_EXAME_KEY ||
+        env.exame_key ||
+        process.env.VITE_EXAME_KEY ||
+        process.env.exame_key ||
+        ""
+      ),
     },
   };
 });

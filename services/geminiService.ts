@@ -3,7 +3,7 @@ import { EXAM_DATA } from "../constants";
 import { AnalysisResult, Category, Trend } from "../types";
 
 let chatSession: Chat | null = null;
-const API_KEY = process.env.exame_key;
+const API_KEY = (import.meta as any).env.VITE_EXAME_KEY || process.env.exame_key;
 
 // Initialize Gemini
 let ai: GoogleGenAI | null = null;
