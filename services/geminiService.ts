@@ -119,22 +119,24 @@ export const analyzePdf = async (base64Data: string): Promise<AnalysisResult | n
     // Let's assume ai.models.generateContent is the way or similar.
     // Re-using the 'ai' instance strategy if possible, but 'ai' is a client.
 
-    console.log("Iniciando análise de PDF com modelo: gemini-1.5-flash");
+    console.log("Iniciando análise de PDF via Chat Session (Modelo: gemini-1.5-flash)");
 
-    const response = await (ai as any).models.generateContent({
-      model: 'gemini-1.5-flash-latest',
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: prompt },
-            { inlineData: { mimeType: 'application/pdf', data: base64Data } }
-          ]
-        }
+    // Usando a mesma estrutura que comprovadamente funciona no chat
+    const analysisSession = (ai as any).chats.create({
+      model: 'gemini-1.5-flash',
+      config: {
+        temperature: 0.1, // Menor temperatura para análise mais precisa
+      }
+    });
+
+    const result = await analysisSession.sendMessage({
+      message: [
+        { text: prompt },
+        { inlineData: { mimeType: 'application/pdf', data: base64Data } }
       ]
     });
 
-    const text = response.text;
+    const text = result.text;
 
     // Clean up markdown code blocks if present
     const cleanJson = text?.replace(/```json/g, '').replace(/```/g, '').trim();
