@@ -43,7 +43,7 @@ export const initializeChat = (): void => {
 
   try {
     chatSession = ai.chats.create({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       config: {
         systemInstruction: getSystemInstruction(),
         temperature: 0.7,
