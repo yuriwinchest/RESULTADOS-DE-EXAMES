@@ -120,7 +120,7 @@ export const analyzePdf = async (base64Data: string): Promise<AnalysisResult | n
     // Re-using the 'ai' instance strategy if possible, but 'ai' is a client.
 
     console.log("Iniciando análise de PDF com modelo: gemini-1.5-flash");
-    const model = ai.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = (ai as any).getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const result = await model.generateContent([
       { text: prompt },
