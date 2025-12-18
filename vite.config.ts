@@ -10,10 +10,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // This is necessary because the Google GenAI SDK and the provided code 
-      // rely on `process.env.API_KEY`.
-      // Vite replaces this string with the actual value during the build.
-      'process.env.API_KEY': JSON.stringify(env.API_KEY),
+      // Map the user's 'exame_key' from Vercel/env to process.env.exame_key
+      'process.env.exame_key': JSON.stringify(env.exame_key),
     },
   };
 });
