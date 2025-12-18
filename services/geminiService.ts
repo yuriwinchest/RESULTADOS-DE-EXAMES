@@ -120,15 +120,21 @@ export const analyzePdf = async (base64Data: string): Promise<AnalysisResult | n
     // Re-using the 'ai' instance strategy if possible, but 'ai' is a client.
 
     console.log("Iniciando análise de PDF com modelo: gemini-1.5-flash");
-    const model = (ai as any).getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const result = await model.generateContent([
-      { text: prompt },
-      { inlineData: { mimeType: 'application/pdf', data: base64Data } }
-    ]);
+    const response = await (ai as any).models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: prompt },
+            { inlineData: { mimeType: 'application/pdf', data: base64Data } }
+          ]
+        }
+      ]
+    });
 
-    const response = await result.response;
-    const text = response.text();
+    const text = response.text;
 
     // Clean up markdown code blocks if present
     const cleanJson = text?.replace(/```json/g, '').replace(/```/g, '').trim();
