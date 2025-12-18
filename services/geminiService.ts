@@ -119,28 +119,27 @@ export const analyzePdf = async (base64Data: string): Promise<AnalysisResult | n
     // Let's assume ai.models.generateContent is the way or similar.
     // Re-using the 'ai' instance strategy if possible, but 'ai' is a client.
 
-    // Correct usage for @google/genai (approximate based on file content):
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: prompt },
-            { inlineData: { mimeType: 'application/pdf', data: base64Data } }
-          ]
-        }
-      ]
-    });
+    const model = ai.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const text = response.text; // TypeScript indicates this is not a function, so treat as property
+    const result = await model.generateContent([
+      { text: prompt },
+      { inlineData: { mimeType: 'application/pdf', data: base64Data } }
+    ]);
+
+    const response = await result.response;
+    const text = response.text();
 
     // Clean up markdown code blocks if present
     const cleanJson = text?.replace(/```json/g, '').replace(/```/g, '').trim();
 
     if (!cleanJson) return null;
 
-    return JSON.parse(cleanJson) as AnalysisResult;
+    try {
+      return JSON.parse(cleanJson) as AnalysisResult;
+    } catch (parseError) {
+      console.error("Error parsing JSON from Gemini:", parseError, text);
+      return null;
+    }
 
   } catch (error) {
     console.error("Error analyzing PDF:", error);
