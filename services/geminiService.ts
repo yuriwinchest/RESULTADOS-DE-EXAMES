@@ -77,7 +77,7 @@ export const analyzePdf = async (base64Data: string): Promise<AnalysisResult | n
   }
 
   try {
-    // const model = ai.models.getVertexModel('gemini-2.0-flash-exp'); // Removed invalid/unused call
+    // Using generic generation for PDF analysis with schema enforcement via prompt
 
     // Using generic generation for PDF analysis with schema enforcement via prompt
     // Note: Using a standard model initialization here as the 'chats' abstraction 
