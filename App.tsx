@@ -75,7 +75,7 @@ const App: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-900 leading-tight">Meus Exames</h1>
-                <p className="text-xs text-slate-500">Comparativo e Análise IA v1.1</p>
+                <p className="text-xs text-slate-500">Comparativo e Análise IA v1.2</p>
               </div>
             </div>
 
